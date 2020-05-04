@@ -2,6 +2,7 @@ package algs;
 
 import model.Node;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,18 +20,36 @@ public class Greedy implements AlgInterface {
         dic = new double[max][max];
         visit = new int[max];
         N = max;
+        length = Double.MAX_VALUE;
+    }
+
+    @Override
+    public void Cal() {
+        List<Node> ln = new ArrayList<Node>();
+        for (Node n:nodes) {
+            ln.add(n);
+        }
+        cal1();
+        for(int i = 1;i < nodes.length;i++){
+            Node first = ln.remove(0);
+            ln.add(first);
+            nodes = ln.toArray(nodes);
+            cal1();
+        }
+    }
+
+    public void cal1(){
         for (int i = 0;i < N ;++i){
             for(int j = 0; j < N; ++j){
                 dic[i][j] = nodes[i].dicToNode(nodes[j]);
             }
         }
-    }
-
-    @Override
-    public void Cal() {
-        way[0] = nodes[0];
+        visit = new int[way.length];
+        Node[] tmp_way = new Node[way.length];
+        tmp_way[0] = nodes[0];
         visit[0] = 1;
         int next_index = 0;
+        double tmp_len = 0;
         for(int index = 1;index < nodes.length;index++){
             double[] dics = dic[next_index];
             double tmp = Double.MAX_VALUE;
@@ -42,9 +61,13 @@ public class Greedy implements AlgInterface {
                 }
             }
             next_index = n_tmp;
-            way[index] = nodes[next_index];
+            tmp_way[index] = nodes[next_index];
             visit[next_index] = 1;
-            length += tmp;
+            tmp_len += tmp;
+        }
+        if (length > tmp_len){
+            length = tmp_len;
+            way = tmp_way;
         }
     }
 
